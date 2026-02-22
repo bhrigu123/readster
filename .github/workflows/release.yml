@@ -1,0 +1,48 @@
+name: Release
+
+# Triggers on version tags: v1.0.0, v1.2.3, etc.
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to create GitHub Releases
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Generate icons
+        run: node scripts/generate-icons.mjs
+
+      - name: Type check
+        run: pnpm compile
+
+      - name: Build extension
+        run: pnpm build
+
+      - name: Zip for Chrome Web Store
+        run: pnpm zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          # Attach the zip as a downloadable release asset
+          files: .output/*.zip
+          # Auto-generate release notes from commits since last tag
+          generate_release_notes: true

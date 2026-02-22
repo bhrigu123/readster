@@ -31,7 +31,7 @@ export default defineConfig({
   manifest: {
     name: 'Readster',
     description: 'A beautiful local-first reading list manager',
-    version: '1.0.0',
+    // version is read automatically from package.json
     permissions: ['storage', 'tabs', 'activeTab', 'contextMenus'],
     action: {
       default_popup: 'popup.html',
