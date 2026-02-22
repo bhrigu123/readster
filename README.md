@@ -4,7 +4,17 @@ A beautiful, local-first reading list manager for Chrome and Edge.
 
 Save pages with one click, organise them with tags, and archive what you've read — all stored in your browser with no account or cloud sync required.
 
-![Readster popup](https://github.com/bhrigu123/readster/raw/main/docs/popup-preview.png)
+## Screenshots
+
+<p align="center">
+  <img src="public/screenshots/dashboard-light.png" alt="Dashboard — Light theme" width="720" />
+</p>
+<p align="center">
+  <img src="public/screenshots/dashboard-dark.png" alt="Dashboard — Dark theme" width="720" />
+</p>
+<p align="center">
+  <img src="public/screenshots/popup.png" alt="Popup — Save a page" width="380" />
+</p>
 
 ---
 
