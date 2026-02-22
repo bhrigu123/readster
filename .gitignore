@@ -20,6 +20,9 @@ dist-chrome/
 .vscode/
 .idea/
 
+# Claude Code
+.claude/
+
 # Logs
 *.log
 pnpm-debug.log*
