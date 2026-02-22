@@ -24,8 +24,11 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
 
+      - name: Install system libraries for sharp (SVG rendering)
+        run: sudo apt-get install -y libvips-dev
+
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --ignore-scripts=false
 
       - name: Generate icons
         run: node scripts/generate-icons.mjs
