@@ -9,6 +9,7 @@ import { extractDomain, getFaviconUrl } from '../../utils/url';
 
 export default function App() {
   const [tab, setTab] = useState<chrome.tabs.Tab | null>(null);
+  const [editableTitle, setEditableTitle] = useState('');
   const [alreadySaved, setAlreadySaved] = useState(false);
   const [saved, setSaved] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
@@ -24,6 +25,7 @@ export default function App() {
         currentWindow: true,
       });
       setTab(currentTab ?? null);
+      setEditableTitle(currentTab?.title ?? currentTab?.url ?? '');
 
       const data = await getStorage();
       setTags(data.tags);
@@ -43,7 +45,7 @@ export default function App() {
     const item: ReadingItem = {
       id: nanoid(),
       url: tab.url,
-      title: tab.title ?? tab.url,
+      title: editableTitle || tab.url,
       favicon: getFaviconUrl(tab.url),
       domain: extractDomain(tab.url),
       dateAdded: Date.now(),
@@ -332,20 +334,27 @@ export default function App() {
                 }}
               />
               <div style={{ minWidth: 0, flex: 1 }}>
-                <p
+                <input
+                  type="text"
+                  value={editableTitle}
+                  onChange={(e) => setEditableTitle(e.target.value)}
                   style={{
                     fontSize: '13px',
                     fontWeight: 500,
                     color: 'var(--text)',
                     marginBottom: '3px',
-                    overflow: 'hidden',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
+                    background: 'transparent',
+                    border: 'none',
+                    borderBottom: '1px solid transparent',
+                    outline: 'none',
+                    width: '100%',
+                    padding: '0',
+                    fontFamily: 'inherit',
+                    transition: 'border-color 0.15s ease',
                   }}
-                >
-                  {tab?.title ?? domain}
-                </p>
+                  onFocus={(e) => { e.target.style.borderBottomColor = 'var(--accent)'; }}
+                  onBlur={(e) => { e.target.style.borderBottomColor = 'transparent'; }}
+                />
                 <p style={{ fontSize: '11px', color: 'var(--text-faint)' }}>{domain}</p>
               </div>
 

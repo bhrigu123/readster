@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
-import { Archive, BookOpen, Hash, Layers } from 'lucide-react';
+import { Archive, BookOpen, Hash, Layers, Monitor, Moon, Sun } from 'lucide-react';
+import type { Theme } from '../hooks/useTheme';
 import type { ViewMode } from '../types';
-import { TagBadge } from './TagBadge';
 import { TagManager } from './TagManager';
 
 interface SidebarProps {
@@ -13,15 +13,14 @@ interface SidebarProps {
   selectedTag: string | null;
   onTagSelect: (tag: string | null) => void;
   onAddTag: (tag: string) => void;
+  theme: Theme;
+  onThemeChange: (t: Theme) => void;
 }
 
 function CountBadge({ count }: { count: number }) {
   return (
     <span
-      style={{
-        background: 'var(--border)',
-        color: 'var(--text-faint)',
-      }}
+      style={{ background: 'var(--border)', color: 'var(--text-faint)' }}
       className="ml-auto text-xs px-1.5 py-0.5 rounded-full font-medium tabular-nums"
     >
       {count}
@@ -30,31 +29,16 @@ function CountBadge({ count }: { count: number }) {
 }
 
 function NavItem({
-  icon,
-  label,
-  count,
-  active,
-  onClick,
+  icon, label, count, active, onClick,
 }: {
-  icon: React.ReactNode;
-  label: string;
-  count: number;
-  active: boolean;
-  onClick: () => void;
+  icon: React.ReactNode; label: string; count: number; active: boolean; onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
-      style={
-        active
-          ? {
-              background: 'var(--accent-dim)',
-              color: 'var(--accent)',
-            }
-          : {
-              color: 'var(--text-muted)',
-            }
-      }
+      style={active
+        ? { background: 'var(--accent-dim)', color: 'var(--accent)' }
+        : { color: 'var(--text-muted)' }}
       className="relative w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm
         font-medium transition-all duration-150 hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
     >
@@ -73,15 +57,39 @@ function NavItem({
   );
 }
 
+const THEME_OPTIONS: { value: Theme; icon: React.ReactNode; label: string }[] = [
+  { value: 'system', icon: <Monitor size={13} />, label: 'System' },
+  { value: 'light',  icon: <Sun size={13} />,     label: 'Light'  },
+  { value: 'dark',   icon: <Moon size={13} />,    label: 'Dark'   },
+];
+
+function ThemeToggle({ theme, onChange }: { theme: Theme; onChange: (t: Theme) => void }) {
+  return (
+    <div
+      style={{ background: 'var(--border)', borderRadius: '99px', padding: '3px', display: 'inline-flex', gap: '2px' }}
+    >
+      {THEME_OPTIONS.map(({ value, icon, label }) => (
+        <button
+          key={value}
+          onClick={() => onChange(value)}
+          title={label}
+          style={theme === value
+            ? { background: 'var(--card)', color: 'var(--text)', boxShadow: 'var(--shadow-sm)' }
+            : { color: 'var(--text-faint)' }}
+          className="w-7 h-7 flex items-center justify-center rounded-full
+            transition-all duration-150 hover:text-[var(--text-muted)]"
+        >
+          {icon}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function Sidebar({
-  activeView,
-  onViewChange,
-  itemCount,
-  archivedCount,
-  tags,
-  selectedTag,
-  onTagSelect,
-  onAddTag,
+  activeView, onViewChange, itemCount, archivedCount,
+  tags, selectedTag, onTagSelect, onAddTag,
+  theme, onThemeChange,
 }: SidebarProps) {
   return (
     <aside
@@ -94,10 +102,7 @@ export function Sidebar({
       className="flex flex-col h-full overflow-y-auto"
     >
       {/* Logo */}
-      <div
-        style={{ borderBottom: '1px solid var(--border)' }}
-        className="px-5 py-5"
-      >
+      <div style={{ borderBottom: '1px solid var(--border)' }} className="px-5 py-5">
         <div className="flex items-center gap-2.5">
           <div
             style={{ background: 'var(--accent)' }}
@@ -118,84 +123,61 @@ export function Sidebar({
 
       {/* Navigation */}
       <nav className="px-3 py-3 flex flex-col gap-1">
-        <NavItem
-          icon={<BookOpen size={15} />}
-          label="Reading List"
-          count={itemCount}
-          active={activeView === 'reading'}
-          onClick={() => onViewChange('reading')}
-        />
-        <NavItem
-          icon={<Archive size={15} />}
-          label="Archived"
-          count={archivedCount}
-          active={activeView === 'archived'}
-          onClick={() => onViewChange('archived')}
-        />
+        <NavItem icon={<BookOpen size={15} />} label="Reading List" count={itemCount}
+          active={activeView === 'reading'} onClick={() => onViewChange('reading')} />
+        <NavItem icon={<Archive size={15} />} label="Archived" count={archivedCount}
+          active={activeView === 'archived'} onClick={() => onViewChange('archived')} />
       </nav>
 
-      {/* Tags section */}
-      {(tags.length > 0 || true) && (
-        <div
-          style={{ borderTop: '1px solid var(--border)' }}
-          className="px-3 py-4 flex-1"
-        >
-          <div className="flex items-center gap-2 px-2 mb-2">
-            <Hash size={11} style={{ color: 'var(--text-faint)' }} />
-            <span
-              style={{ color: 'var(--text-faint)' }}
-              className="text-[10px] font-semibold uppercase tracking-wider"
-            >
-              Tags
-            </span>
-          </div>
-
-          {/* "All" filter */}
-          <button
-            onClick={() => onTagSelect(null)}
-            style={
-              selectedTag === null
-                ? { background: 'var(--accent-dim)', color: 'var(--accent)' }
-                : { color: 'var(--text-muted)' }
-            }
-            className="w-full flex items-center px-2 py-1.5 rounded-lg text-xs font-medium
-              transition-all duration-150 hover:bg-[var(--accent-dim)] hover:text-[var(--accent)] mb-1"
-          >
-            All
-          </button>
-
-          {/* Tag list */}
-          <div className="flex flex-col gap-0.5 mb-3">
-            {tags.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => onTagSelect(selectedTag === tag ? null : tag)}
-                style={
-                  selectedTag === tag
-                    ? { background: 'var(--accent-dim)', color: 'var(--accent)' }
-                    : { color: 'var(--text-muted)' }
-                }
-                className="w-full flex items-center px-2 py-1.5 rounded-lg text-xs
-                  transition-all duration-150 hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
-              >
-                <span style={{ color: 'var(--text-faint)' }} className="mr-1">#</span>
-                {tag}
-              </button>
-            ))}
-          </div>
-
-          <TagManager onAdd={onAddTag} />
+      {/* Tags */}
+      <div style={{ borderTop: '1px solid var(--border)' }} className="px-3 py-4 flex-1">
+        <div className="flex items-center gap-2 px-2 mb-2">
+          <Hash size={11} style={{ color: 'var(--text-faint)' }} />
+          <span style={{ color: 'var(--text-faint)' }} className="text-[10px] font-semibold uppercase tracking-wider">
+            Tags
+          </span>
         </div>
-      )}
 
-      {/* Footer */}
+        <button
+          onClick={() => onTagSelect(null)}
+          style={selectedTag === null
+            ? { background: 'var(--accent-dim)', color: 'var(--accent)' }
+            : { color: 'var(--text-muted)' }}
+          className="w-full flex items-center px-2 py-1.5 rounded-lg text-xs font-medium
+            transition-all duration-150 hover:bg-[var(--accent-dim)] hover:text-[var(--accent)] mb-1"
+        >
+          All
+        </button>
+
+        <div className="flex flex-col gap-0.5 mb-3">
+          {tags.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => onTagSelect(selectedTag === tag ? null : tag)}
+              style={selectedTag === tag
+                ? { background: 'var(--accent-dim)', color: 'var(--accent)' }
+                : { color: 'var(--text-muted)' }}
+              className="w-full flex items-center px-2 py-1.5 rounded-lg text-xs
+                transition-all duration-150 hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
+            >
+              <span style={{ color: 'var(--text-faint)' }} className="mr-1">#</span>
+              {tag}
+            </button>
+          ))}
+        </div>
+
+        <TagManager onAdd={onAddTag} />
+      </div>
+
+      {/* Footer — theme toggle */}
       <div
         style={{ borderTop: '1px solid var(--border)' }}
-        className="px-4 py-3"
+        className="px-4 py-3 flex items-center justify-between"
       >
         <p style={{ color: 'var(--text-faint)' }} className="text-[10px]">
-          All data stored locally
+          Stored locally
         </p>
+        <ThemeToggle theme={theme} onChange={onThemeChange} />
       </div>
     </aside>
   );
