@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+.output/
+dist/
+dist-chrome/
+
+# WXT generated files
+.wxt/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editor
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
