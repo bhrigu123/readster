@@ -29,9 +29,9 @@ const GROUP_ORDER: Record<string, number> = {
 
 function groupOrder(label: string): number {
   if (label in GROUP_ORDER) return GROUP_ORDER[label];
-  // For "Month Year" labels, parse them so newest comes first
+  // Month labels come after Today/Yesterday/This Week, newest month first
   const date = new Date(label);
-  if (!isNaN(date.getTime())) return -(date.getTime());
+  if (!isNaN(date.getTime())) return 3 + (1 / date.getTime());
   return 999;
 }
 
@@ -48,8 +48,18 @@ export function groupItemsByDate(
   }
 
   // Sort groups: Today → Yesterday → This Week → oldest months
+  // Sort items within each group: newest first
   const sorted = new Map(
-    [...groups.entries()].sort(([a], [b]) => groupOrder(a) - groupOrder(b)),
+    [...groups.entries()]
+      .sort(([a], [b]) => groupOrder(a) - groupOrder(b))
+      .map(([label, groupItems]) => {
+        groupItems.sort((a, b) => {
+          const tsA = a.archived ? (a.archivedAt ?? a.dateAdded) : a.dateAdded;
+          const tsB = b.archived ? (b.archivedAt ?? b.dateAdded) : b.dateAdded;
+          return tsB - tsA;
+        });
+        return [label, groupItems] as [DateGroupLabel, ReadingItem[]];
+      }),
   );
 
   return sorted;
