@@ -40,12 +40,10 @@ jobs:
         run: pnpm build
 
       - name: Zip for Chrome Web Store
-        run: pnpm zip
+        run: cd .output/chrome-mv3 && zip -r ../../readster-chrome.zip .
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          # Attach the zip as a downloadable release asset
-          files: .output/*.zip
-          # Auto-generate release notes from commits since last tag
+          files: readster-chrome.zip
           generate_release_notes: true
