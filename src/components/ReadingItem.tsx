@@ -75,7 +75,7 @@ export function ReadingItem({
       className="relative flex flex-col py-3.5 transition-colors duration-150"
     >
       {/* ── Main row ── */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 pl-3">
         {/* Checkbox / archive indicator — hidden until hover */}
         {!isArchived ? (
           <button
