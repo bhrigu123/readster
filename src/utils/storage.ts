@@ -59,6 +59,9 @@ export async function updateItemTags(
   data.items = data.items.map((item) =>
     item.id === id ? { ...item, tags } : item,
   );
+  // Also register any new tags globally in the same write
+  const merged = new Set([...data.tags, ...tags]);
+  data.tags = [...merged].sort();
   await saveStorage(data);
 }
 

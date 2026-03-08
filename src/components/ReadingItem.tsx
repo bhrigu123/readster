@@ -202,7 +202,7 @@ export function ReadingItem({
           >
             <div
               style={{ borderTop: '1px solid var(--border)' }}
-              className="mt-3 pt-3 flex flex-col gap-2.5"
+              className="mt-3 pt-3 px-8 flex flex-col gap-2.5"
             >
               {/* All available tags */}
               {allTags.length > 0 && (
@@ -255,6 +255,13 @@ export function ReadingItem({
                 >
                   <Plus size={11} />
                   Add
+                </button>
+                <button
+                  onClick={() => setEditingTags(false)}
+                  style={{ background: 'var(--border)', color: 'var(--text-muted)' }}
+                  className="text-xs px-2.5 py-1 rounded-md hover:opacity-80 transition-opacity"
+                >
+                  Done
                 </button>
               </div>
             </div>
